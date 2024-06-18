@@ -1,0 +1,4 @@
+<Bindings>
+    <Binding name="WOWHEAD_QUICK_LINK_NAME" header="WOWHEAD_QUICK_LINK_HEADER" category="ADDONS">RunWowheadQuickLink()</Binding>
+    <Binding name="WOWHEAD_QUICK_LINK_RAIDERIO_NAME" category="ADDONS">RunAlternativeQuickLink()</Binding>
+</Bindings>
