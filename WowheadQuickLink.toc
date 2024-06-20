@@ -1,13 +1,14 @@
 ## Interface: 30300
 ## Version: 2.15.15-335a-backport
-## Title: Wowhead Quick Link
+## Title: Wowhead Quick Link 3.3.5a Backport
 ## Notes: Mouse over and press CTRL-C on (almost) anything to generate a Wowhead link.
-## Author: Blur
+## Author: Blur, Disruption
 ## SavedVariables: WowheadQuickLinkCfg
-## X-Curse-Project-ID: 326804
 
 WowheadQuickLinkConfig.xml
 WowheadQuickLinkConfig.lua
 
 WowheadQuickLinkStrategies.lua
 WowheadQuickLink.lua
+
+

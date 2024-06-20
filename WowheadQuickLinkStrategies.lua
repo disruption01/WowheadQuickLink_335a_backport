@@ -15,6 +15,8 @@ local regions = {
     [4] = "tw",
     [5] = "cn"
 }
+QuestLogListScrollFrame = CreateFrame("ScrollFrame", "QuestLogListScrollFrame", QuestLogFrame, "FauxScrollFrameTemplate")
+-- Initialize other properties if necessary
 
 
 function nameSpace.strategies.GetWowheadUrl(dataSources)
@@ -201,10 +203,33 @@ function strategies.wowhead.GetQuestFromFocus(data)
 end
 
 function strategies.wowhead.GetQuestFromWrathLogTitleFocus(data)
-    if not (IsWrath() and CheckFrameName("QuestLogListScrollFrameButton%d+", data)) then return end
+    -- Check if the game version is Wrath of the Lich King (3.3.5a)
+    if not IsWrath() then
+        return nil
+    end
+
+    -- Check if data is a table and contains necessary fields
+    if type(data) ~= "table" or not data.focus or not data.focus.GetID then
+        return nil
+    end
+
+    -- Calculate the quest index based on the scroll frame position
     local questIndex = data.focus:GetID() + FauxScrollFrame_GetOffset(QuestLogListScrollFrame)
-    local questID = GetQuestIDFromLogIndex(questIndex)
-    if questID == 0 then return end
+
+    -- Check if questIndex is valid
+    local numEntries = GetNumQuestLogEntries()
+    if questIndex < 1 or questIndex > numEntries then
+        return nil
+    end
+
+    -- Retrieve quest ID from quest log
+    local _, _, _, _, _, _, _, _, questID = GetQuestLogTitle(questIndex)
+
+    -- Validate quest ID
+    if not questID or questID == 0 then
+        return nil
+    end
+
     return questID, "quest"
 end
 

@@ -1,4 +1,5 @@
 local addonName, nameSpace = ...
+
 local frame = CreateFrame("Frame")
 frame:RegisterEvent("ADDON_LOADED")
 frame:RegisterEvent("PLAYER_LOGIN")
@@ -8,55 +9,49 @@ frame:SetScript("OnEvent", function(self, event, arg1)
         if WowheadQuickLinkCfg == nil then
             WowheadQuickLinkCfg = {
                 prefix = "",
-                suffix = ""
+                suffix = "",
+                default_bindings_set = false
             }
         end
     elseif event == "PLAYER_LOGIN" then
-        -- check if binding setup has run before
-        if WowheadQuickLinkCfg.default_bindings_set == nil then
-            -- hasn't run before, so run it
-
-            -- first value is the name attribute of each from Bindings.xml
+        -- Check if bindings have been set before
+        if not WowheadQuickLinkCfg.default_bindings_set then
+            -- Set default bindings
             HandleDefaultBindings("WOWHEAD_QUICK_LINK_NAME", "CTRL-C")
             HandleDefaultBindings("WOWHEAD_QUICK_LINK_RAIDERIO_NAME", "CTRL-SHIFT-C")
 
             SaveBindings(GetCurrentBindingSet())
 
-            -- prevent setup from running again
+            -- Mark default bindings as set
             WowheadQuickLinkCfg.default_bindings_set = true
         end
 
-        frame:UnregisterEvent("PLAYER_LOGIN")
+        self:UnregisterEvent("PLAYER_LOGIN")
     end
 end)
 
 function HandleDefaultBindings(binding_name, default_key)
-    -- get existing binding info
-    local bind1, bind2 = GetBindingKey(binding_name)
-    local action = GetBindingAction(default_key)
+    -- Get existing binding info
+    local bind1 = GetBindingKey(binding_name)
 
-    -- check if binds have been set by the user or the default key is used anywhere else
-    if bind1 == nil and bind2 == nil and action == "" then
-        -- neither bind has been set by the user and the default key isn't in use, so set the default key
+    -- Check if the bind has been set by the user
+    if not bind1 then
+        -- Set the default key binding
         SetBinding(default_key, binding_name)
     end
 end
 
-
 function IsRetail()
-    return WOW_PROJECT_ID == WOW_PROJECT_MAINLINE
+    return false  -- Adjust based on your specific version check needs
 end
-
 
 function IsClassic()
-    return WOW_PROJECT_ID == WOW_PROJECT_CLASSIC
+    return false  -- Adjust based on your specific version check needs
 end
-
 
 function IsWrath()
-    return WOW_PROJECT_ID == WOW_PROJECT_WRATH_CLASSIC
+    return true  -- Adjust based on your specific version check needs
 end
-
 
 local function Hide()
     WowheadQuickLinkConfig_Frame:Hide()
@@ -66,9 +61,6 @@ local function SetUrl()
     WowheadQuickLinkConfig_FinalUrlText:SetText(string.format(nameSpace.baseWowheadUrl, WowheadQuickLinkCfg.prefix, "<type>", "<id>", WowheadQuickLinkCfg.suffix))
 end
 
-
-SLASH_WOWHEAD_QUICK_LINK1 = "/wql"
-SLASH_WOWHEAD_QUICK_LINK2 = "/wowheadquicklink"
 SlashCmdList["WOWHEAD_QUICK_LINK"] = function(message, editBox)
     WowheadQuickLinkConfig_EditBoxPrefix:SetText(WowheadQuickLinkCfg.prefix)
     WowheadQuickLinkConfig_EditBoxSuffix:SetText(WowheadQuickLinkCfg.suffix)
@@ -76,13 +68,11 @@ SlashCmdList["WOWHEAD_QUICK_LINK"] = function(message, editBox)
     WowheadQuickLinkConfig_Frame:Show()
 end
 
-
 WowheadQuickLinkConfig_EditBoxPrefix:SetScript("OnEscapePressed", Hide)
 WowheadQuickLinkConfig_EditBoxPrefix:SetScript("OnEnterPressed", Hide)
 
 WowheadQuickLinkConfig_EditBoxSuffix:SetScript("OnEscapePressed", Hide)
 WowheadQuickLinkConfig_EditBoxSuffix:SetScript("OnEnterPressed", Hide)
-
 
 WowheadQuickLinkConfig_EditBoxPrefix:SetScript("OnTextChanged", function(self)
     WowheadQuickLinkCfg.prefix = self:GetText()
@@ -102,9 +92,6 @@ WowheadQuickLinkConfig_EditBoxSuffix:SetScript("OnTabPressed", function(self)
     WowheadQuickLinkConfig_EditBoxPrefix:SetFocus()
 end)
 
-
-BINDING_HEADER_WOWHEAD_QUICK_LINK_HEADER = "Wowhead Quick Link"
-BINDING_DESCRIPTION_WOWHEAD_QUICK_LINK_DESC = "Keybind for generating Wowhead link"
-BINDING_NAME_WOWHEAD_QUICK_LINK_NAME = "Generate Wowhead link"
-
-BINDING_NAME_WOWHEAD_QUICK_LINK_RAIDERIO_NAME = "Generate Raider.IO link"
+_G["BINDING_HEADER_WOWHEAD_QUICK_LINK_HEADER"] = "Wowhead Quick Link"
+_G["BINDING_NAME_WOWHEAD_QUICK_LINK_NAME"] = "Generate Wowhead link"
+_G["BINDING_NAME_WOWHEAD_QUICK_LINK_RAIDERIO_NAME"] = "Generate Raider.IO link"
